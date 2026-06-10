@@ -1,7 +1,7 @@
 # AtendeLab
 Sistema de Controle de Atendimentos Acadêmicos desenvolvido na disciplina de Design e Arquitetura de Software I.
 ## Tecnologias utilizadas
-- PHP 8.x
+- PHP 8.2
 - MySQL
 - phpMyAdmin
 - HTML
