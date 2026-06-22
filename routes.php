@@ -1,133 +1,71 @@
 <?php
 
-require_once __DIR__ . '/Controllers/UsuarioController.php';
-require_once __DIR__ . '/Controllers/PessoasController.php';
-require_once __DIR__ . '/Controllers/AtendimentosController.php';
-require_once __DIR__ . '/Controllers/TiposAtendimentosController.php';
+require_once __DIR__ . '/Controllers/AuthController.php';
+require_once __DIR__ . '/Controllers/UsuariosController.php';
+require_once __DIR__ . '/app/Middleware/auth.php';
 
-$controller = $_GET['controller'] ?? 'home';
-$action = $_GET['action'] ?? 'index';
+$controller = $_GET['controller'] ?? 'auth';
+$action = $_GET['action'] ?? 'login';
 
-if ($controller === 'usuarios') {
+switch ($controller) {
+    case 'auth':
+        $authController = new AuthController();
 
-    $usuariosController = new UsuariosController();
+        switch ($action) {
+            case 'login':
+                $authController->exibirLogin();
+                break;
 
-    switch ($action) {
-        case 'listar':
-            $usuariosController->listar();
-            break;
+            case 'entrar':
+                $authController->entrar();
+                break;
 
-        case 'buscar':
-            $usuariosController->buscarPorId();
-            break;
+            case 'dashboard':
+                $authController->dashboard();
+                break;
 
-        case 'criar':
-            $usuariosController->criar();
-            break;
+            case 'logout':
+                $authController->logout();
+                break;
 
-        case 'atualizar':
-            $usuariosController->atualizar();
-            break;
+            default:
+                http_response_code(404);
+                echo 'Ação de autenticação não encontrada';
+        }
+        break;
+    
+    case 'usuarios':
+        exigirAutenticacao();
+        $usuariosController = new UsuarioController();
 
-        case 'excluir':
-            $usuariosController->excluir();
-            break;
+        switch ($action) {
+            case 'listar':
+                $usuariosController->listar();
+                break;
 
-        default:
-            echo 'Ação de usuários não encontrada';
-            break;
-    }
+            case 'buscarPorId':
+                $usuariosController->buscarPorId();
+                break;
 
-} elseif ($controller === 'pessoas') {
+            case 'criar':
+                $usuariosController->criar();
+                break;
 
-    $pessoasController = new PessoasController();
+            case 'atualizar':
+                $usuariosController->atualizar();
+                break;
 
-    switch ($action) {
+            case 'excluir':
+                $usuariosController->excluir();
+                break;
 
-        case 'listar':
-            $pessoasController->listar();
-            break;
+            default:
+                http_response_code(404);
+                echo 'Ação de usuários não encontrada';
+        }
+        break;
 
-        case 'buscar':
-            $pessoasController->buscarPorId();
-            break;
-
-        case 'criar':
-            $pessoasController->criar();
-            break;
-
-        case 'atualizar':
-            $pessoasController->atualizar();
-            break;
-
-        case 'excluir':
-            $pessoasController->excluir();
-            break;
-
-        default:
-            echo 'Ação de pessoas não encontrada';
-            break;
-    }
-
-} 
-elseif ($controller === 'atendimentos') {
-
-    $atendimentosController = new AtendimentosController();
-
-    switch ($action) {
-
-        case 'listar':
-            $atendimentosController->listar();
-            break;
-
-        case 'visualizar':
-            $atendimentosController->visualizar();
-            break;
-
-        case 'criar':
-            $atendimentosController->criar();
-            break;
-
-        case 'atualizarStatus':
-            $atendimentosController->atualizarStatus();
-            break;
-    }
-}elseif ($controller === 'tiposatendimentos') {
-    $controllerObj = new TiposAtendimentosController();
-
-    switch ($action) {
-        case 'listar':
-            $controllerObj->listar();
-            break;
-
-        case 'buscar':
-            $controllerObj->buscarPorId();
-            break;
-
-        case 'criar':
-            $controllerObj->criar();
-            break;
-
-        case 'atualizar':
-            $controllerObj->atualizar();
-            break;
-
-        case 'excluir':
-            $controllerObj->excluir();
-            break;
-    }
-}else {
-
-    echo '<h1>Atendelab</h1>';
-    echo '<p>Projeto em execução.</p>';
-
-    echo '<p>Usuários:</p>';
-    echo '<ul>';
-    echo '<li>?controller=usuarios&action=listar</li>';
-    echo '</ul>';
-
-    echo '<p>Pessoas:</p>';
-    echo '<ul>';
-    echo '<li>?controller=pessoas&action=listar</li>';
-    echo '</ul>';
+    default:
+        echo 'Controller não encontrado';
+        break;
 }
