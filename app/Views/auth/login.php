@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 
 <head>
@@ -57,7 +57,8 @@
                                     Senha
                                 </label>
 
-                                <input type="password" name="senha" id="senha" class="form-control" required>
+                                <input type="password" name="senha" id="senha" class="form-control"
+                                    required>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">

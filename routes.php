@@ -1,71 +1,76 @@
 <?php
 
-require_once __DIR__ . '/Controllers/AuthController.php';
-require_once __DIR__ . '/Controllers/UsuariosController.php';
+require_once __DIR__ . '/app/Controllers/AuthController.php';
+require_once __DIR__ . '/app/Controllers/UsuariosController.php';
+require_once __DIR__ . '/app/Controllers/PessoasController.php';
+require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
+require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
 require_once __DIR__ . '/app/Middleware/auth.php';
 
 $controller = $_GET['controller'] ?? 'auth';
-$action = $_GET['action'] ?? 'login';
+$action     = $_GET['action']     ?? 'login';
 
-switch ($controller) {
-    case 'auth':
-        $authController = new AuthController();
+if ($controller === 'auth') {
 
-        switch ($action) {
-            case 'login':
-                $authController->exibirLogin();
-                break;
+    $c = new AuthController();
+    switch ($action) {
+        case 'login':     $c->exibirLogin(); break;
+        case 'entrar':    $c->entrar();      break;
+        case 'dashboard': $c->dashboard();   break;
+        case 'logout':    $c->logout();      break;
+        default: echo 'Ação não encontrada.';
+    }
 
-            case 'entrar':
-                $authController->entrar();
-                break;
+} elseif ($controller === 'usuarios') {
+    $c = new UsuariosController();
+    switch ($action) {
+        case 'listar':    $c->listar();      break;
+        case 'buscar':    $c->buscarPorId(); break;
+        case 'criar':     $c->criar();       break;
+        case 'atualizar': $c->atualizar();   break;
+        case 'excluir':   $c->excluir();     break;
+        default: echo 'Ação não encontrada.';
+    }
 
-            case 'dashboard':
-                $authController->dashboard();
-                break;
+} elseif ($controller === 'pessoas') {
 
-            case 'logout':
-                $authController->logout();
-                break;
+    exigirAutenticacao();
+    $c = new PessoasController();
+    switch ($action) {
+        case 'listar':    $c->listar();      break;
+        case 'buscar':    $c->buscarPorId(); break;
+        case 'criar':     $c->criar();       break;
+        case 'atualizar': $c->atualizar();   break;
+        case 'excluir':   $c->excluir();     break;
+        default: echo 'Ação não encontrada.';
+    }
 
-            default:
-                http_response_code(404);
-                echo 'Ação de autenticação não encontrada';
-        }
-        break;
-    
-    case 'usuarios':
-        exigirAutenticacao();
-        $usuariosController = new UsuarioController();
+} elseif ($controller === 'tipos_atendimentos') {
 
-        switch ($action) {
-            case 'listar':
-                $usuariosController->listar();
-                break;
+    exigirAutenticacao();
+    $c = new TiposAtendimentosController();
+    switch ($action) {
+        case 'listar':    $c->listar();      break;
+        case 'buscar':    $c->buscarPorId(); break;
+        case 'criar':     $c->criar();       break;
+        case 'atualizar': $c->atualizar();   break;
+        case 'excluir':   $c->excluir();     break;
+        default: echo 'Ação não encontrada.';
+    }
 
-            case 'buscarPorId':
-                $usuariosController->buscarPorId();
-                break;
+} elseif ($controller === 'atendimentos') {
 
-            case 'criar':
-                $usuariosController->criar();
-                break;
+    exigirAutenticacao();
+    $c = new AtendimentosController();
+    switch ($action) {
+        case 'listar':           $c->listar();          break;
+        case 'buscar':           $c->buscarPorId();     break;
+        case 'criar':            $c->criar();           break;
+        case 'atualizar_status': $c->atualizarStatus(); break;
+        default: echo 'Ação não encontrada.';
+    }
 
-            case 'atualizar':
-                $usuariosController->atualizar();
-                break;
-
-            case 'excluir':
-                $usuariosController->excluir();
-                break;
-
-            default:
-                http_response_code(404);
-                echo 'Ação de usuários não encontrada';
-        }
-        break;
-
-    default:
-        echo 'Controller não encontrado';
-        break;
+} else {
+    echo '<h1>AtendeLab</h1>';
+    echo '<p>Use ?controller=auth&action=login para acessar.</p>';
 }

@@ -1,16 +1,18 @@
 <?php
 
 // Importa a conexao com o banco de dados
-require __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Importa funções auxiliares de autenticação e sessao
-require __DIR__ . '/../app/Middleware/auth.php';
+require_once __DIR__ . '/../Middleware/auth.php';
 
-class AuthController {
+class AuthController
+{
     // Armazena a conexao PDO
     private PDO $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Recupera a conexao criada em database.php
         global $pdo;
 
@@ -18,10 +20,11 @@ class AuthController {
         $this->pdo = $pdo;
     }
 
-    public function exibirLogin(): void {
+    public function exibirLogin(): void
+    {
         // Se o usuário já estiver logado, redireciona para o dashboard
         if (usuarioAutenticado()) {
-            header('location: ?controller=auth&action=dashboard');
+            header('Location: ?controller=auth&action=dashboard');
             exit;
         }
 
@@ -36,22 +39,23 @@ class AuthController {
         require __DIR__ . '/../Views/auth/login.php';
     }
 
-    public function entrar(): void {
+    public function entrar(): void
+    {
         // Permite executar o login somente por requisições POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('location: ?controller=auth&action=login');
+            header('Location: ?controller=auth&action=login');
             exit;
         }
 
         // Recupera os dados enviados pelo formulário
         $email = trim($_POST['email'] ?? '');
-        $senha = $_POST['senha'] ?? '';
+        $senha =      $_POST['senha'] ?? '';
 
         // Verifica se os campos obrigatórios foram preenchidos
         if ($email === '' || $senha === '') {
             $_SESSION['erro_login'] = 'Informe o e-mail e a senha.';
 
-            header('location: ?controller=auth&action=login');
+            header('Location: ?controller=auth&action=login');
             exit;
         }
 
@@ -59,15 +63,15 @@ class AuthController {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['erro_login'] = 'Informe um e-mail válido.';
 
-            header('location: ?controller=auth&action=login');
+            header('Location: ?controller=auth&action=login');
             exit;
         }
 
         // Busca o usuário pelo e-mail.
-        $sql = "SELECT id, nome, email, senha, perfil, status
+        $sql = 'SELECT id, nome, email, senha, perfil, status
                 FROM usuarios
                 WHERE email = :email
-                LIMIT 1";
+                LIMIT 1';
 
         // Prepara a consulta SQL
         $stmt = $this->pdo->prepare($sql);
@@ -83,13 +87,13 @@ class AuthController {
 
         // Valida usuário existente, status ativo e senha correta
         if (
-            !$usuario 
-            || $usuario['status'] !== 'ativo' 
+            !$usuario
+            || $usuario['status'] !== 'ativo'
             || !password_verify($senha, $usuario['senha'])
         ) {
             $_SESSION['erro_login'] = 'E-mail ou senha inválidos.';
 
-            header('location: ?controller=auth&action=login');
+            header('Location: ?controller=auth&action=login');
             exit;
         }
 
@@ -98,19 +102,20 @@ class AuthController {
 
         // Salva na sessão apenas os dados necessários do usuário
         $_SESSION['usuario'] = [
-            'id' => $usuario['id'],
-            'nome' => $usuario['nome'],
-            'email' => $usuario['email'],
-            'perfil' => $usuario['perfil']
+            'id'     => $usuario['id'],
+            'nome'   => $usuario['nome'],
+            'email'  => $usuario['email'],
+            'perfil' => $usuario['perfil'],
         ];
 
         // Redireciona para o dashboard
-        header('location: ?controller=auth&action=dashboard');
+        header('Location: ?controller=auth&action=dashboard');
         exit;
     }
 
-    public function dashboard(): void {
-        // Bloqueia o acesso caso o usuario nao esteja logado.
+    // Bloqueia o acesso caso o usuario nao esteja logado.
+    public function dashboard(): void
+    {
         exigirAutenticacao();
 
         // Recupera os dados do usuário autenticado
@@ -120,13 +125,15 @@ class AuthController {
         require __DIR__ . '/../Views/dashboard/index.php';
     }
 
-    public function logout(): void {
+    public function logout(): void
+    {
         // Remove os dados armazenados na sessão
         $_SESSION = [];
 
         // Remove o cookie da sessao, caso esteja sendo utilizado
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
+
             setcookie(
                 session_name(),
                 '',
@@ -148,7 +155,7 @@ class AuthController {
         $_SESSION['mensagem'] = 'Sessão encerrada com sucesso.';
 
         // Redireciona para a tela de login
-        header('location: ?controller=auth&action=login');
+        header('Location: ?controller=auth&action=login');
         exit;
     }
 }

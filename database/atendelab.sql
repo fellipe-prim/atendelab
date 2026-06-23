@@ -1,4 +1,4 @@
-CREATE TABLE usuarios (
+ CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -21,7 +21,7 @@ CREATE TABLE pessoas (
 CREATE TABLE tipos_atendimentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
-    descricao TEXT,
+    descricao TEXT,  
     status ENUM(
         'agendado',
         'em_andamento',
