@@ -1,6 +1,6 @@
 <?php
 
-if (session_status() === PHP_SESSION_NONE) {
+if  (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
@@ -13,8 +13,8 @@ function usuarioAutenticado(): bool
 function exigirAutenticacao(): void
 {
     if (!usuarioAutenticado()) {
-        $_SESSION['mensagem'] =
-            'Faca login para acessar a area restrita.';
+        $_SESSION['mensagem'] = 
+            'Faça login para acessar a area restrita.';
 
         header('Location: ?controller=auth&action=login');
         exit;
