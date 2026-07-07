@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 28/06/2026 às 20:26
+-- Tempo de geração: 02/07/2026 às 23:05
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -47,7 +47,9 @@ CREATE TABLE `atendimentos` (
 --
 
 INSERT INTO `atendimentos` (`id`, `pessoa_id`, `tipo_atendimento_id`, `usuario_id`, `data_atendimento`, `hora_atendimento`, `descricao`, `observacao`, `status`, `criado_em`, `observacao_final`, `atualizado_em`) VALUES
-(1, 1, 1, 1, '2026-06-11', '22:26:57', 'O aluno Pedro veio tirar uma dúvida sobre a instalação do XAMPP.', 'Atendimento realizado via balcão.', 'ABERTO', '2026-06-12 01:26:57', NULL, '2026-06-28 17:24:11');
+(1, 1, 1, 1, '2026-06-11', '22:26:57', 'O aluno Pedro veio tirar uma dúvida sobre a instalação do XAMPP.', 'Atendimento realizado via balcão.', 'CONCLUIDO', '2026-06-12 01:26:57', 'Atendimento finalizado com sucesso. O aluno entendeu o roteamento.', '2026-07-01 23:47:52'),
+(2, 1, 1, 1, '2026-06-15', '14:30:00', 'Aluno com dúvida na Aula 04 de Fábrica de Software.', NULL, 'ABERTO', '2026-07-01 22:54:12', NULL, '2026-07-01 22:54:12'),
+(3, 4, 3, 1, '2026-07-06', '20:00:00', 'Quero ver todos os jogos da copa', NULL, 'EM_ANDAMENTO', '2026-07-02 20:33:07', NULL, '2026-07-02 20:35:16');
 
 -- --------------------------------------------------------
 
@@ -74,8 +76,10 @@ CREATE TABLE `pessoas` (
 --
 
 INSERT INTO `pessoas` (`id`, `nome`, `documento`, `telefone`, `email`, `curso`, `periodo`, `status`, `criado_em`, `observacoes`, `atualizado_em`) VALUES
-(1, 'Maria Oliveira', '12345678900', '(47) 99999-8888', '', 'Engenharia de Software', '3º Período', 'ativo', '2026-06-28 17:30:07', NULL, '2026-06-28 17:24:11'),
-(2, 'Carlos Souza', '98765432100', '(47) 98888-7777', '', 'Sistemas de Informação', '5º Período', 'ativo', '2026-06-28 17:30:07', NULL, '2026-06-28 17:24:11');
+(1, 'Mario de souza', '7777777777777', '(47) 888888888', 'mario@gmail.com', 'Engenharia de Software', '6º', 'ativo', '2026-06-28 17:30:07', 'atualizado', '2026-07-02 20:55:00'),
+(2, 'Carlos Souza', '98765432100', '(47) 98888-7777', 'carlos@gmail.com', 'Engenharia de Software', '5º Período', 'ativo', '2026-06-28 17:30:07', '', '2026-07-02 20:54:24'),
+(3, 'kaka', '111.111.111-11', '(47) 77777-7777', 'kaka@gmail.com', 'Técnico de futebol', '5º', 'ativo', '2026-07-01 22:07:50', 'jogador caro', '2026-07-02 20:54:50'),
+(4, 'Pedro', '888888888888', '(55) 5555-55555', 'pedro@gmail.com', 'Engenharia de Software', '5', 'ativo', '2026-07-02 20:06:22', '', '2026-07-02 20:06:22');
 
 -- --------------------------------------------------------
 
@@ -97,8 +101,10 @@ CREATE TABLE `tipos_atendimentos` (
 --
 
 INSERT INTO `tipos_atendimentos` (`id`, `nome`, `descricao`, `criado_em`, `status`, `atualizado_em`) VALUES
-(1, 'Dúvida Acadêmica', 'Atendimento para tirar dúvidas sobre matérias e notas.', '2026-06-28 17:30:25', 'ativo', '2026-06-28 17:24:11'),
-(2, 'Solicitação de Documento', 'Pedido de histórico escolar ou certificados.', '2026-06-28 17:30:25', 'ativo', '2026-06-28 17:24:11');
+(1, 'Dúvida Acadêmica', 'Atendimento para tirar dúvidas sobre matérias e notas.', '2026-06-28 17:30:25', 'inativo', '2026-07-01 22:29:26'),
+(2, 'Solicitação de Documento', 'Pedido de histórico escolar ou certificados.', '2026-06-28 17:30:25', 'ativo', '2026-06-28 17:24:11'),
+(3, 'Copa', 'Copa do mundo', '2026-07-01 22:28:13', 'ativo', '2026-07-02 21:01:01'),
+(4, 'teste', 'teste1', '2026-07-02 20:56:31', 'inativo', '2026-07-02 20:56:37');
 
 -- --------------------------------------------------------
 
@@ -166,19 +172,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `atendimentos`
 --
 ALTER TABLE `atendimentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `pessoas`
 --
 ALTER TABLE `pessoas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `tipos_atendimentos`
 --
 ALTER TABLE `tipos_atendimentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`

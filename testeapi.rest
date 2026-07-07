@@ -1,0 +1,120 @@
+### Variáveis Globais
+@baseUrl = http://localhost/atendelab/public/index.php
+
+############################################################
+### MÓDULO DE AUTENTICAÇÃO (AULA 03)
+### Execute o "Entrar" primeiro para liberar os outros testes
+############################################################
+
+### Realizar Login
+# @name login
+POST {{baseUrl}}?controller=auth&action=entrar
+Content-Type: application/x-www-form-urlencoded
+
+email=admin@atendelab.com
+&senha=123456
+
+### Ver Dashboard (Teste de Sessão)
+GET {{baseUrl}}?controller=auth&action=dashboard
+
+### Sair do Sistema (Logout)
+GET {{baseUrl}}?controller=auth&action=logout
+
+
+############################################################
+### MÓDULO DE USUÁRIOS (AULA 02)
+############################################################
+
+### Listar Usuários
+GET {{baseUrl}}?controller=usuarios&action=listar
+
+### Criar Novo Usuário
+POST {{baseUrl}}?controller=usuarios&action=criar
+Content-Type: application/x-www-form-urlencoded
+
+nome=Novo Usuario Teste
+&email=teste2@atendelab.com
+&senha=123456
+&perfil=atendente
+&status=ativo
+
+
+############################################################
+### MÓDULO DE PESSOAS (AULA 04)
+############################################################
+
+### Listar Pessoas
+GET {{baseUrl}}?controller=pessoas&action=listar
+
+### Criar Pessoa
+POST {{baseUrl}}?controller=pessoas&action=criar
+Content-Type: application/x-www-form-urlencoded
+
+nome=Carlos Henrique Souza
+&documento=321.654.987-10
+&telefone=(47) 99999-0010
+&email=carlos.souza@exemplo.com
+&curso=Engenharia de Software
+&periodo=3º
+&status=ativo
+&observacoes=Interessado em monitoria
+
+### Buscar Pessoa por ID
+GET {{baseUrl}}?controller=pessoas&action=buscar&id=1
+
+### Inativar Pessoa (Aula 04 não usa DELETE)
+POST {{baseUrl}}?controller=pessoas&action=inativar
+Content-Type: application/x-www-form-urlencoded
+
+id=1
+
+
+############################################################
+### MÓDULO DE TIPOS DE ATENDIMENTO (AULA 04)
+############################################################
+
+### Listar Tipos
+GET {{baseUrl}}?controller=tipos&action=listar
+
+### Criar Tipo de Atendimento
+POST {{baseUrl}}?controller=tipos&action=criar
+Content-Type: application/x-www-form-urlencoded
+
+nome=Dúvida Técnica
+&descricao=Atendimento para suporte com softwares e ferramentas.
+&status=ativo
+
+
+############################################################
+### MÓDULO DE ATENDIMENTOS (AULA 04)
+############################################################
+
+### Listar Atendimentos (Teste do JOIN)
+GET {{baseUrl}}?controller=atendimentos&action=listar
+
+### Criar Atendimento
+POST {{baseUrl}}?controller=atendimentos&action=criar
+Content-Type: application/x-www-form-urlencoded
+
+pessoa_id=1
+&tipo_atendimento_id=1
+&usuario_id=1
+&descricao=O aluno possui dúvidas sobre a estrutura MVC do projeto.
+&data_atendimento=2026-06-15
+&hora_atendimento=14:30
+&status=aberto
+
+### Alterar Status para Em Andamento
+POST {{baseUrl}}?controller=atendimentos&action=alterarStatus
+Content-Type: application/x-www-form-urlencoded
+
+id=1
+&status=em_andamento
+
+### Concluir Atendimento (Obrigatório observação_final)
+POST {{baseUrl}}?controller=atendimentos&action=alterarStatus
+Content-Type: application/x-www-form-urlencoded
+
+id=1
+&status=concluido
+&observacao_final=Atendimento finalizado com sucesso. O aluno entendeu o roteamento.

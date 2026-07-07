@@ -2,62 +2,126 @@
 
 require_once __DIR__ . '/app/Middleware/auth.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
-require_once __DIR__ . '/app/Controllers/UsuariosController.php';
-require_once __DIR__ . '/app/Controllers/PessoasController.php';
-require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
-require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
 
 $controller = $_GET['controller'] ?? 'auth';
 $action = $_GET['action'] ?? 'login';
 
-if ($controller === 'auth') {
-    $auth = new AuthController();
+function responderRotaNaoEncontrada($mensagem) {
+    http_response_code(404);
+    echo $mensagem;
+    exit;
+}
 
+if ($controller === 'auth') {
+    $authController = new AuthController();
     switch ($action) {
         case 'login':
-            $auth->exibirLogin();
+            $authController->exibirLogin();
             break;
         case 'entrar':
-            $auth->entrar();
+            $authController->entrar();
             break;
         case 'dashboard':
             exigirAutenticacao();
-            $auth->dashboard();
+            $authController->dashboard();
             break;
         case 'logout':
-            $auth->logout();
+            $authController->logout();
             break;
         default:
-            http_response_code(404);
-            echo 'Ação de autenticação não encontrada.';
+            responderRotaNaoEncontrada('Ação de autenticação não encontrada.');
             break;
     }
     exit;
 }
 
-exigirAutenticacao();
-
 switch ($controller) {
-    case 'usuarios':
-        $obj = new UsuariosController();
+    case 'frontend':
+        require_once __DIR__ . '/app/Controllers/FrontendController.php';
+        $frontendController = new FrontendController();
+        if (!method_exists($frontendController, $action)) {
+            responderRotaNaoEncontrada('Página não encontrada.');
+        }
+        $frontendController->$action();
         break;
+
     case 'pessoas':
-        $obj = new PessoasController();
+        exigirAutenticacao();
+        require_once __DIR__ . '/app/Controllers/PessoasController.php';
+        $pessoasController = new PessoasController();
+        if (!method_exists($pessoasController, $action)) {
+            responderRotaNaoEncontrada('Ação de pessoas não encontrada.');
+        }
+        $pessoasController->$action();
         break;
+
     case 'tipos':
-        $obj = new TiposAtendimentosController();
+        exigirAutenticacao();
+        require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
+        $tiposController = new TiposAtendimentosController();
+        switch ($action) {
+            case 'listar':
+                $tiposController->listar();
+                break;
+            case 'buscarPorId':
+            case 'buscar':
+                $tiposController->buscar();
+                break;
+            case 'criar':
+                $tiposController->criar();
+                break;
+            case 'atualizar':
+                $tiposController->atualizar();
+                break;
+            case 'inativar':
+                $tiposController->inativar();
+                break;
+            default:
+                responderRotaNaoEncontrada('Ação de tipos de atendimento não encontrada.');
+                break;
+        }
         break;
+
     case 'atendimentos':
-        $obj = new AtendimentosController();
+        exigirAutenticacao();
+        require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
+        $atendimentosController = new AtendimentosController();
+        switch ($action) {
+            case 'listar':
+                $atendimentosController->listar();
+                break;
+            case 'visualizar':
+                $atendimentosController->visualizar();
+                break;
+            case 'criar':
+                $atendimentosController->criar();
+                break;
+            case 'alterarStatus':
+            case 'atualizarStatus':
+                $atendimentosController->alterarStatus();
+                break;
+            case 'opcoesFormulario':
+                $atendimentosController->opcoesFormulario();
+                break;
+            default:
+                responderRotaNaoEncontrada(
+                    'Ação de atendimentos não encontrada.'
+                );
+                break;
+        }
         break;
+
+    case 'usuarios':
+        exigirAutenticacao();
+        require_once __DIR__ . '/app/Controllers/UsuariosController.php';
+        $usuariosController = new UsuariosController();
+        if (!method_exists($usuariosController, $action)) {
+            responderRotaNaoEncontrada('Ação de usuários não encontrada.');
+        }
+        $usuariosController->$action();
+        break;
+
     default:
-        http_response_code(404);
-        exit('Controller não encontrado.');
+        responderRotaNaoEncontrada('Controller não encontrado.');
+        break;
 }
-
-if (!method_exists($obj, $action)) {
-    http_response_code(404);
-    exit('Ação não encontrada.');
-}
-
-$obj->$action();

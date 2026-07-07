@@ -19,11 +19,12 @@ class AtendimentosController
 
     public function listar(): void
     {
-        $sql = 'SELECT a.id, p.nome AS pessoa_name, 
+        // Ajustado para 'hora_atendimento' para bater com seu banco
+        $sql = 'SELECT a.id, p.nome AS pessoa_nome, 
                        t.nome AS tipo_nome, 
                        u.nome AS responsavel_nome,
                        a.descricao, a.status, 
-                       a.data_atendimento, a.horario_atendimento,
+                       a.data_atendimento, a.hora_atendimento,
                        a.observacao_final
                 FROM atendimentos a
                 INNER JOIN pessoas p ON a.pessoa_id = p.id
@@ -65,32 +66,20 @@ class AtendimentosController
 
     public function criar(): void
     {
-        $pessoaId = filter_var(
-            $_POST['pessoa_id'] ?? null, 
-            FILTER_VALIDATE_INT
-        );
-        $tipoId = filter_var(
-            $_POST['tipo_atendimento_id'] ?? null, 
-            FILTER_VALIDATE_INT
-        );
-        $usuarioId = filter_var(
-            $_POST['usuario_id'] ?? null, 
-            FILTER_VALIDATE_INT
-        );
+        $pessoaId = filter_var($_POST['pessoa_id'] ?? null, FILTER_VALIDATE_INT);
+        $tipoId = filter_var($_POST['tipo_atendimento_id'] ?? null, FILTER_VALIDATE_INT);
+    
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $usuarioId = $_SESSION['usuario']['id'] ?? null;
         
+        // 3. Pega os outros campos
         $descricao = trim($_POST['descricao'] ?? '');
         $data = $_POST['data_atendimento'] ?? '';
-        $horario = $_POST['horario_atendimento'] ?? '';
+        $hora = $_POST['hora_atendimento'] ?? ''; 
         $status = $_POST['status'] ?? 'aberto';
 
-        if (!$pessoaId || !$tipoId || !$usuarioId || 
-            $descricao === '' || $data === '' || $horario === '') {
+        if (!$pessoaId || !$tipoId || !$usuarioId || $descricao === '' || $data === '' || $hora === '') {
             $this->json(['erro' => 'Preencha os campos obrigatórios.'], 422);
-            return;
-        }
-
-        if (!in_array($status, ['aberto', 'em_andamento', 'concluido'], true)) {
-            $this->json(['erro' => 'Status inicial inválido.'], 422);
             return;
         }
 
@@ -98,10 +87,10 @@ class AtendimentosController
             $stmt = $this->pdo->prepare(
                 'INSERT INTO atendimentos 
                 (pessoa_id, tipo_atendimento_id, usuario_id, descricao, 
-                 status, data_atendimento, horario_atendimento)
+                 status, data_atendimento, hora_atendimento)
                 VALUES 
                 (:pessoa_id, :tipo_id, :usuario_id, :descricao, 
-                 :status, :data_atendimento, :horario_atendimento)'
+                 :status, :data_atendimento, :hora_atendimento)'
             );
 
             $stmt->execute([
@@ -111,13 +100,13 @@ class AtendimentosController
                 'descricao' => $descricao,
                 'status' => $status,
                 'data_atendimento' => $data,
-                'horario_atendimento' => $horario,
+                'hora_atendimento' => $hora,
             ]);
 
             $this->json(['mensagem' => 'Atendimento registrado com sucesso.'], 201);
 
         } catch (PDOException $e) {
-            $this->json(['erro' => 'Não foi possível registrar o atendimento.'], 400);
+            $this->json(['erro' => 'Erro no banco: ' . $e->getMessage()], 400);
         }
     }
 
@@ -127,27 +116,19 @@ class AtendimentosController
         $status = $_POST['status'] ?? '';
         $observacao = trim($_POST['observacao_final'] ?? '');
 
-        if (!$id || !in_array(
-            $status, 
-            ['aberto', 'em_andamento', 'concluido'], 
-            true
-        )) {
+        if (!$id || !in_array($status, ['aberto', 'em_andamento', 'concluido'], true)) {
             $this->json(['erro' => 'ID ou status inválido.'], 422);
             return;
         }
 
         if ($status === 'concluido' && $observacao === '') {
-            $this->json([
-                'erro' => 'Informe a observação final para concluir.'
-            ], 422);
+            $this->json(['erro' => 'Informe a observação final para concluir.'], 422);
             return;
         }
 
         try {
             $stmt = $this->pdo->prepare(
-                'UPDATE atendimentos 
-                 SET status = :status, observacao_final = :observacao 
-                 WHERE id = :id'
+                'UPDATE atendimentos SET status = :status, observacao_final = :observacao WHERE id = :id'
             );
             
             $stmt->execute([
@@ -159,7 +140,7 @@ class AtendimentosController
             $this->json(['mensagem' => 'Status atualizado com sucesso.']);
 
         } catch (PDOException $e) {
-            $this->json(['erro' => 'Não foi possível atualizar o status.'], 400);
+            $this->json(['erro' => 'Erro no banco: ' . $e->getMessage()], 400);
         }
     }
 }
